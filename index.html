@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+    body {
+        font: 10px sans-serif;
+        background-color: #F2F2F2;
+        margin: 0px;
+        padding: 0px;
+        font-size: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1px;
+        /*shape-rendering: crispEdges;*/
+    }
+
+    .dot,
+    .dot1,
+    .dot2,
+    .dot3 {
+        stroke: none;
+
+    }
+
+    .xaxis {
+        visibility: hidden;
+    }
+
+
+
+
+
+
+
+    .label-year {
+        font: 9px "Hiragino Sans GB", "华文细黑", "STHeiti", "微软雅黑", "Microsoft YaHei", SimHei, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+        overflow: auto;
+    }
+
+    .labelgroup,
+    .labelgroup1 {
+        overflow: hidden;
+        font: 11px "Hiragino Sans GB", "华文细黑", "STHeiti", "微软雅黑", "Microsoft YaHei", SimHei, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    }
+
+    .label,
+    .label1 {
+        overflow: hidden;
+        font: 9px "Hiragino Sans GB", "华文细黑", "STHeiti", "微软雅黑", "Microsoft YaHei", SimHei, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    }
+
+    .tooltip hr {
+        padding: 0;
+        margin: 8px 0;
+    }
+
+    .title {
+        font: 14px "Hiragino Sans GB", "华文细黑", "STHeiti", "微软雅黑", "Microsoft YaHei", SimHei, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+
+    }
+
+    .subtitle {
+        font: 10px "Hiragino Sans GB", "华文细黑", "STHeiti", "微软雅黑", "Microsoft YaHei", SimHei, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    }
+    </style>
+</head>
+
+<body onResize=" window.location=window.location;">
+    <div class="title" style="padding-top: 40px; padding-left: 40px;">
+        <strong> Percentage of first-level managers in 2016 vs 2018 </strong>
+    </div>
+    <div class="subtitle" style="padding-left: 40px;">
+        Increase in Silicon Valley's Asian and white managers
+    </div>
+    <div class=" subtitle" style="position: absolute; margin-top: 460px; margin-left: 535px">
+        Source: EEO-1 filings
+    </div>
+</body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+var margin = { top: 70, right: 50, bottom: 30, left: 50 },
+    width = 700 - margin.left - margin.right,
+    height = 450 - margin.top - margin.bottom;
+
+
+var formatpercent = d3.format(".0%");
+
+var x = d3.scaleLinear()
+    .range([0, width]);
+
+var y0 = d3.scaleLinear()
+    .range([height, 0]);
+var y1 = d3.scaleLinear()
+    .range([height, 0]);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+
+d3.select("body").attr("align", "center");
+
+var yaxisLeft = d3.axisLeft(y0).tickFormat(formatpercent);
+
+var yaxisRight = d3.axisRight(y1).tickFormat(formatpercent);
+var xAxis = d3.axisBottom(x).tickFormat(formatpercent);
+
+
+
+
+d3.tsv("time_parity_data.tsv", function(error, data) {
+    if (error) throw error;
+
+    data.forEach(function(d) {
+        d.mid_mgmnt_2016 = +d.mid_mgmnt_2016;
+        d.mid_mgmnt_2018 = +d.mid_mgmnt_2018;
+    });
+
+    y0.domain([0.2, 0.35]);
+
+    y1.domain([0.2, 0.35]);
+
+
+
+    svg.append("g")
+        .attr("class", "yaxisLeft")
+        .attr("transform", "translate(" + 100 + " ,0)")
+        .style("opacity", 0.5)
+        .attr("stroke-width", 2)
+        .call(d3.axisLeft(y0).ticks(1).tickFormat(formatpercent))
+    svg.append("g")
+        .append("text")
+        .attr("class", "label-year")
+        .attr("x", 90)
+        .attr("y", -19)
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .text("2016");
+
+    svg.append("g")
+        .attr("class", "yaxisRight")
+        .attr("transform", "translate(" + 300 + " ,0)")
+        .style("opacity", 0.5)
+        .attr("stroke-width", 2)
+        .call(d3.axisRight(y1).ticks(1).tickFormat(formatpercent))
+    svg.append("g")
+        .append("text")
+        .attr("class", "label-year")
+        .attr("x", 290)
+        .attr("y", -19)
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .text("2018")
+        .style("fill", "black")
+    svg.append("g")
+        .append("text")
+        .attr("class", "label-year")
+        .attr("x", 190)
+        .attr("y", -19)
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .text("Asian")
+        .style("fill", "black")
+        .style("font-weight", "bold");
+
+
+
+    var color = d3.scaleOrdinal()
+        .domain(["asian", "white"])
+        .range(["#73a64e", "#C22319"])
+
+    svg.selectAll(".dot")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "dot")
+        .attr("r", 5)
+        .attr("class", function(d) { return "dot " + d.asian })
+        .attr("cx", 100)
+
+        .attr("cy", function(d) { return y0(d.mid_mgmnt_2016) })
+
+        .style("fill", function(d) { return color(d.race) })
+        .style("opacity", 0.8);
+
+
+
+    svg.selectAll(".label")
+        .data(data)
+        .enter().append("text")
+        .attr("class", "label")
+        .attr("x", 50)
+        .attr("y", function(d) { return y0(d.mid_mgmnt_2016) })
+        .text(function(d) { return d.company });
+
+    svg.selectAll(".labelgroup")
+        .data(data)
+        .enter().append("text")
+        .attr("class", "labelgroup")
+        .attr("x", 50)
+        .attr("y", function(d) {
+            return y0(d.mid_mgmnt_2016) + 12
+        })
+        .text(function(d) { return formatpercent(d.mid_mgmnt_2016) });
+
+
+
+    svg.selectAll(".dot1")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "dot1")
+        .attr("r", 5)
+        .attr("class", function(d) { return "dot1 " + d.asian })
+        .attr("cx", 300)
+        .attr("cy", function(d) { return y1(d.mid_mgmnt_2018) })
+        .style("fill", function(d) { return color(d.race) })
+        .style("opacity", 0.8);
+
+
+
+    svg.selectAll(".line")
+        .data(data)
+        .enter().append("line")
+        .attr("class", "line")
+        .attr("class", function(d) { return "line " + d.asian })
+        .attr("x1", 100)
+        .attr("y1", function(d) { return y0(d.mid_mgmnt_2016) })
+        .attr("x2", 300)
+        .attr("y2", function(d) { return y1(d.mid_mgmnt_2018) })
+        .attr("stroke-width", 0.5)
+        .style("stroke", "grey")
+        .on("mouseover", function(d) {
+            d3.select(this)
+                .style("stroke", function(d) { return color(d.race) })
+                .attr("stroke-width", 5)
+            svg.selectAll(".subtitle")
+                .data(data)
+                .enter().append("text")
+                .attr("class", "subtitle")
+                .attr("x", 306)
+                .attr("y", function(d) {
+                    return y0(d.mid_mgmnt_2018) + 3
+                })
+                .text(function(d) { return formatpercent(d.mid_mgmnt_2018) });
+
+
+        })
+        .on("mouseout", function(d) {
+            d3.select(this)
+                .style("stroke", "grey")
+                .attr("stroke-width", 0.5)
+
+        });
+
+    svg.selectAll(".line2")
+        .data(data)
+        .enter().append("line")
+        .attr("class", "line2")
+        .attr("class", function(d) { return "line2 " + d.asian })
+        .attr("x1", 100)
+        .attr("y1", 163.33333333333326)
+        .attr("x2", 300)
+        .attr("y2", 33.17999999999989)
+        .attr("stroke-width", 5)
+        .style("stroke", function(d) { return color(d.asian) });
+
+
+
+
+    var y2 = d3.scaleLinear()
+        .range([height, 0]).nice();
+    var y3 = d3.scaleLinear()
+        .range([height, 0]).nice();
+    var yaxisLeft2 = d3.axisLeft(y2).tickFormat(formatpercent);
+
+    var yaxisRight3 = d3.axisRight(y3).tickFormat(formatpercent);
+
+    y2.domain([0.5, 0.72]);
+
+    y3.domain([0.5, 0.72]);
+
+
+
+    svg.append("g")
+        .attr("class", "yaxisLeft2")
+        .attr("transform", "translate(" + 400 + " ,0)")
+        .style("opacity", 0.5)
+        .attr("stroke-width", 2)
+        .call(d3.axisLeft(y2).ticks(0).tickFormat(formatpercent))
+    svg.append("g")
+        .append("text")
+        .attr("class", "label-year")
+        .attr("x", 390)
+        .attr("y", -19)
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .text("2016");
+
+
+    svg.append("g")
+        .attr("class", "yaxisRight3")
+        .attr("transform", "translate(" + 600 + " ,0)")
+        .style("opacity", 0.5)
+        .attr("stroke-width", 2)
+        .call(d3.axisRight(y3).ticks(0).tickFormat(formatpercent))
+    svg.append("g")
+        .append("text")
+        .attr("class", "label-year")
+        .attr("x", 590)
+        .attr("y", -19)
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .text("2018")
+        .style("fill", "black")
+    svg.append("g")
+        .append("text")
+        .attr("class", "label-year")
+        .attr("x", 490)
+        .attr("y", -19)
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .text("White")
+        .style("fill", "black")
+        .style("font-weight", "bold");
+
+
+    svg.selectAll(".dot2")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "dot2")
+        .attr("r", 5)
+        .attr("class", function(d) { return "dot2 " + d.white })
+        .attr("cx", 400)
+
+        .attr("cy", function(d) { return y2(d.mid_mgmnt_2016) })
+
+        .style("fill", function(d) { return color(d.race) })
+        .style("opacity", 0.8);
+
+
+
+    svg.selectAll(".label1")
+        .data(data)
+        .enter().append("text")
+        .attr("class", "label1")
+        .attr("text-anchor", "middle")
+        .attr("x", 370)
+        .attr("y", function(d) { return y2(d.mid_mgmnt_2016) })
+        .text(function(d) { return d.company })
+
+        // Smaller font size:
+        .style("font-size", "11px");
+
+    svg.selectAll(".labelgroup1")
+        .data(data)
+        .enter().append("text")
+
+        .attr("class", "labelgroup1")
+        .attr("x", 350)
+        .attr("y", function(d) {
+            return y2(d.mid_mgmnt_2016) + 12
+        })
+        .text(function(d) { return formatpercent(d.mid_mgmnt_2016) })
+        .style("font-size", "11px");
+
+
+
+    svg.selectAll(".dot3")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "dot3")
+        .attr("r", 5)
+        .attr("class", function(d) { return "dot3 " + d.white })
+        .attr("cx", 600)
+        .attr("cy", function(d) { return y3(d.mid_mgmnt_2018) })
+        .style("fill", function(d) { return color(d.race) })
+        .style("opacity", 0.8);
+
+
+
+    svg.selectAll(".line1")
+        .data(data)
+        .enter().append("line")
+        .attr("class", "line1")
+        .attr("class", function(d) { return "line1 " + d.asian })
+        .attr("x1", 400)
+        .attr("y1", function(d) { return y2(d.mid_mgmnt_2016) })
+        .attr("x2", 600)
+        .attr("y2", function(d) { return y2(d.mid_mgmnt_2018) })
+        .attr("stroke-width", 0.5)
+        .style("stroke", "grey")
+        .on("mouseover", function(d) {
+            d3.select(this)
+                .style("stroke", "#C22319")
+                .attr("stroke-width", 5)
+                .style("stroke-color", "#C22319")
+            svg.selectAll(".subtitle")
+                .data(data)
+                .enter().append("text")
+                .attr("class", "subtitle")
+                .attr("x", 606)
+                .attr("y", function(d) {
+                    return y2(d.mid_mgmnt_2018) + 3
+                })
+                .text(function(d) { return formatpercent(d.mid_mgmnt_2018) });
+
+
+        })
+        .on("mouseout", function(d) {
+            d3.select(this)
+                .style("stroke", "grey")
+                .attr("stroke-width", 0.5)
+
+        });
+
+    svg.selectAll(".line3")
+        .data(data)
+        .enter().append("line")
+        .attr("class", "line3")
+        .attr("class", function(d) { return "line3 " + d.white })
+        .attr("x1", 400)
+        .attr("y1", 159.09090909090907)
+        .attr("x2", 600)
+        .attr("y2", 63.63636363636357)
+        .attr("stroke-width", 5)
+        .style("stroke", "#C22319");
+});
+</script>
+
+</html>
