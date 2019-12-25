@@ -44,7 +44,10 @@
 
 
 
-
+    .line3,
+    .line1 {
+        shape-rendering: crispEdges;
+    }
 
     .label_year {
         font: 9px "Hiragino Sans GB", "华文细黑", "STHeiti", "微软雅黑", "Microsoft YaHei", SimHei, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -480,7 +483,7 @@ d3.tsv("time_parity_data.tsv", function(error, data) {
     //Making default line and labels 
     var redBox = svg.append("rect")
         .attr("x", 456)
-        .attr("y", 222)
+        .attr("y", 102)
         .attr("width", 32)
         .attr("height", 24)
         .attr("fill", "#C22319")
@@ -492,7 +495,7 @@ d3.tsv("time_parity_data.tsv", function(error, data) {
         .attr("class", "line3")
         .attr("class", function(d) { return "line3 " + d.white })
         .attr("x1", 400)
-        .attr("y1", 254.54545454545445)
+        .attr("y1", 95.45454545454538)
         .attr("x2", 600)
         .attr("y2", 254.54545454545445)
         .attr("stroke-width", 5)
@@ -502,7 +505,7 @@ d3.tsv("time_parity_data.tsv", function(error, data) {
         .append("text")
         .attr("class", "default_label2")
         .attr("x", 460)
-        .attr("y", 230)
+        .attr("y", 110)
         .attr("fill", "black")
         .attr("dy", ".71em")
         .style("text-anchor", "start")
