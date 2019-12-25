@@ -1,6 +1,6 @@
 company	race	mid_mgmnt_2016	mid_mgmnt_2018
 eBay	asian	0.32	0.34
-Uber	asian	0.26	0.30
+Uber	asian	0.26	0.3
 Adobe	asian	0.23	0.24
 Facebook	asian	0.3	0.34
 Intel	asian	0.28	0.31
@@ -10,6 +10,6 @@ eBay	white	0.57	0.57
 Uber	white	0.56	0.56
 Adobe	white	0.69	0.69
 Facebook	white	0.57	0.54
-Intel	white	0.54	0.57
+Intel	white	0.54	0.54
 Microsoft	white	0.62	0.62
 Apple	white	0.61	0.61
